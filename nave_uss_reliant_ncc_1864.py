@@ -9,8 +9,8 @@ def inicializar_janela():
     pygame.init()
     display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-    gluPerspective(45, (display[0] / display[1]), 0.1, 100.0)
-    glTranslatef(0.0, 0.0, -50)  # Ajusta a posição da câmera para visualizar o espaço
+    gluPerspective(30, (display[0] / display[1]), 0.1, 100.0)  # Ajuste do FOV (campo de visão)
+    glTranslatef(0.0, 0.0, -20)  # Ajusta a posição da câmera para visualizar o espaço (mais próximo)
 
 # Função para desenhar estrelas no espaço
 def desenhar_espaco():
@@ -25,10 +25,8 @@ def desenhar_espaco():
         )
     glEnd()
 
-# Função para desenhar uma nave em 3D
+# Função para desenhar a nave (agora como um disco cinza)
 def desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z):
-    # Corpo da nave - um cubo para representar a base
-    glColor3f(1, 0, 0)  # Cor da nave (vermelho)
     glPushMatrix()  # Empilha a matriz para que transformações não afetem outros objetos
     glTranslatef(x_pos, y_pos, z_pos)  # Move a nave para a posição x_pos no eixo X
 
@@ -37,73 +35,17 @@ def desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z):
     glRotatef(rot_y, 0, 1, 0)  # Rotaciona a nave ao redor do eixo Y
     glRotatef(rot_z, 0, 0, 1)  # Rotaciona a nave ao redor do eixo Z
 
-    # Corpo principal da nave (cubos)
-    glBegin(GL_QUADS)
-    
-    # Frente da nave (um quadrado)
-    glVertex3f(-3, -1, 2)
-    glVertex3f(3, -1, 2)
-    glVertex3f(3, 1, 2)
-    glVertex3f(-3, 1, 2)
-    
-    # Traseira da nave (um quadrado)
-    glVertex3f(-3, -1, -2)
-    glVertex3f(3, -1, -2)
-    glVertex3f(3, 1, -2)
-    glVertex3f(-3, 1, -2)
-    
-    # Lados da nave (quatro quadrados)
-    # Lado esquerdo
-    glVertex3f(-3, -1, 2)
-    glVertex3f(-3, -1, -2)
-    glVertex3f(-3, 1, -2)
-    glVertex3f(-3, 1, 2)
-    
-    # Lado direito
-    glVertex3f(3, -1, 2)
-    glVertex3f(3, -1, -2)
-    glVertex3f(3, 1, -2)
-    glVertex3f(3, 1, 2)
-    
-    # Topo
-    glVertex3f(-3, 1, 2)
-    glVertex3f(3, 1, 2)
-    glVertex3f(3, 1, -2)
-    glVertex3f(-3, 1, -2)
-    
-    # Fundo
-    glVertex3f(-3, -1, 2)
-    glVertex3f(3, -1, 2)
-    glVertex3f(3, -1, -2)
-    glVertex3f(-3, -1, -2)
-    
-    glEnd()
-
-    # Asa superior - uma pirâmide
-    glPushMatrix()
-    glTranslatef(0, 2.5, 0)  # Move a asa superior para cima
-    glColor3f(0, 0, 1)  # Cor da asa (azul)
-    glBegin(GL_TRIANGLES)
-    
-    # Triângulo da asa
-    glVertex3f(-4, 0, 2)
-    glVertex3f(4, 0, 2)
-    glVertex3f(0, 2, 0)
-    
-    glVertex3f(-4, 0, -2)
-    glVertex3f(4, 0, -2)
-    glVertex3f(0, 2, 0)
-    
-    glEnd()
-    glPopMatrix()
+    # Corpo da nave - um disco cinza
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a nave
+    gluDisk(gluNewQuadric(), 0, 5, 32, 1)  # Desenha um disco com raio 5 e espessura 1
 
     glPopMatrix()  # Restaura a transformação original
 
 def main():
     inicializar_janela()
     
-    # Posições iniciais da nave
-    x_pos = 0.0
+    # Posições iniciais da nave (começando à esquerda da tela)
+    x_pos = -10.0  # Nave começa fora da tela (à esquerda)
     y_pos = 0.0
     z_pos = -50.0
 
@@ -130,25 +72,27 @@ def main():
             y_pos += 0.1  # Move para cima
         if teclas[K_DOWN]:
             y_pos -= 0.1  # Move para baixo
-        if teclas[K_w]:
-            z_pos += 0.1  # Move para frente (para o plano da tela)
-        if teclas[K_s]:
-            z_pos -= 0.1  # Move para trás
 
         # Rotação da nave
         if teclas[K_a]:
-            rot_y += 1  # Rotaciona ao redor do eixo Y (sentido anti-horário)
+            rot_x += 1  # Rotaciona ao redor do eixo X (sentido anti-horário)
         if teclas[K_d]:
+            rot_x -= 1  # Rotaciona ao redor do eixo X (sentido horário)
+        
+        # Apenas as teclas W e S devem rotacionar a nave ao redor do eixo Y
+        if teclas[K_w]:
+            rot_y += 1  # Rotaciona ao redor do eixo Y (sentido anti-horário)
+        if teclas[K_s]:
             rot_y -= 1  # Rotaciona ao redor do eixo Y (sentido horário)
-        if teclas[K_q]:
-            rot_x += 1  # Rotaciona ao redor do eixo X
-        if teclas[K_e]:
-            rot_x -= 1  # Rotaciona ao redor do eixo X
+
+        # Animação da nave chegando à tela
+        if x_pos < 0:
+            x_pos += 0.1  # A nave se move para a direita até alcançar a posição inicial na tela
 
         # Desenha o fundo com as estrelas
         desenhar_espaco()
 
-        # Desenha a nave 3D na posição e rotação especificada
+        # Desenha a nave 3D (agora um disco cinza) na posição e rotação especificada
         desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z)
 
         pygame.display.flip()  # Atualiza a tela a cada frame
