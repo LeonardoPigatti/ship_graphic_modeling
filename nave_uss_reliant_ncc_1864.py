@@ -25,48 +25,134 @@ def desenhar_espaco():
         )
     glEnd()
 
-# Função para desenhar a nave
-def desenhar_nave():
+# Função para desenhar uma nave em 3D
+def desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z):
+    # Corpo da nave - um cubo para representar a base
     glColor3f(1, 0, 0)  # Cor da nave (vermelho)
+    glPushMatrix()  # Empilha a matriz para que transformações não afetem outros objetos
+    glTranslatef(x_pos, y_pos, z_pos)  # Move a nave para a posição x_pos no eixo X
 
-    # Corpo da nave (triângulo)
+    # Rotação da nave nos eixos X, Y e Z
+    glRotatef(rot_x, 1, 0, 0)  # Rotaciona a nave ao redor do eixo X
+    glRotatef(rot_y, 0, 1, 0)  # Rotaciona a nave ao redor do eixo Y
+    glRotatef(rot_z, 0, 0, 1)  # Rotaciona a nave ao redor do eixo Z
+
+    # Corpo principal da nave (cubos)
+    glBegin(GL_QUADS)
+    
+    # Frente da nave (um quadrado)
+    glVertex3f(-3, -1, 2)
+    glVertex3f(3, -1, 2)
+    glVertex3f(3, 1, 2)
+    glVertex3f(-3, 1, 2)
+    
+    # Traseira da nave (um quadrado)
+    glVertex3f(-3, -1, -2)
+    glVertex3f(3, -1, -2)
+    glVertex3f(3, 1, -2)
+    glVertex3f(-3, 1, -2)
+    
+    # Lados da nave (quatro quadrados)
+    # Lado esquerdo
+    glVertex3f(-3, -1, 2)
+    glVertex3f(-3, -1, -2)
+    glVertex3f(-3, 1, -2)
+    glVertex3f(-3, 1, 2)
+    
+    # Lado direito
+    glVertex3f(3, -1, 2)
+    glVertex3f(3, -1, -2)
+    glVertex3f(3, 1, -2)
+    glVertex3f(3, 1, 2)
+    
+    # Topo
+    glVertex3f(-3, 1, 2)
+    glVertex3f(3, 1, 2)
+    glVertex3f(3, 1, -2)
+    glVertex3f(-3, 1, -2)
+    
+    # Fundo
+    glVertex3f(-3, -1, 2)
+    glVertex3f(3, -1, 2)
+    glVertex3f(3, -1, -2)
+    glVertex3f(-3, -1, -2)
+    
+    glEnd()
+
+    # Asa superior - uma pirâmide
+    glPushMatrix()
+    glTranslatef(0, 2.5, 0)  # Move a asa superior para cima
+    glColor3f(0, 0, 1)  # Cor da asa (azul)
     glBegin(GL_TRIANGLES)
-    glVertex3f(0, 2, 0)  # Ponta da nave
-    glVertex3f(-2, -2, 0)  # Base da nave à esquerda
-    glVertex3f(2, -2, 0)  # Base da nave à direita
+    
+    # Triângulo da asa
+    glVertex3f(-4, 0, 2)
+    glVertex3f(4, 0, 2)
+    glVertex3f(0, 2, 0)
+    
+    glVertex3f(-4, 0, -2)
+    glVertex3f(4, 0, -2)
+    glVertex3f(0, 2, 0)
+    
     glEnd()
+    glPopMatrix()
 
-    # Asas da nave (retângulos)
-    glColor3f(0, 0, 1)  # Cor das asas (azul)
-
-    # Asa esquerda
-    glBegin(GL_QUADS)
-    glVertex3f(-2, -2, 0)
-    glVertex3f(-4, -4, 0)
-    glVertex3f(-4, -6, 0)
-    glVertex3f(-2, -6, 0)
-    glEnd()
-
-    # Asa direita
-    glBegin(GL_QUADS)
-    glVertex3f(2, -2, 0)
-    glVertex3f(4, -4, 0)
-    glVertex3f(4, -6, 0)
-    glVertex3f(2, -6, 0)
-    glEnd()
+    glPopMatrix()  # Restaura a transformação original
 
 def main():
     inicializar_janela()
+    
+    # Posições iniciais da nave
+    x_pos = 0.0
+    y_pos = 0.0
+    z_pos = -50.0
+
+    # Variáveis de rotação para controlar a nave
+    rot_x = 0
+    rot_y = 0
+    rot_z = 0
+
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 return
 
-        desenhar_espaco()  # Desenha o fundo com as estrelas
-        desenhar_nave()  # Desenha a nave no centro da tela
+        # Captura das teclas pressionadas para mover e rotacionar a nave
+        teclas = pygame.key.get_pressed()
+        
+        # Movimento da nave
+        if teclas[K_LEFT]:
+            x_pos -= 0.1  # Move para a esquerda
+        if teclas[K_RIGHT]:
+            x_pos += 0.1  # Move para a direita
+        if teclas[K_UP]:
+            y_pos += 0.1  # Move para cima
+        if teclas[K_DOWN]:
+            y_pos -= 0.1  # Move para baixo
+        if teclas[K_w]:
+            z_pos += 0.1  # Move para frente (para o plano da tela)
+        if teclas[K_s]:
+            z_pos -= 0.1  # Move para trás
+
+        # Rotação da nave
+        if teclas[K_a]:
+            rot_y += 1  # Rotaciona ao redor do eixo Y (sentido anti-horário)
+        if teclas[K_d]:
+            rot_y -= 1  # Rotaciona ao redor do eixo Y (sentido horário)
+        if teclas[K_q]:
+            rot_x += 1  # Rotaciona ao redor do eixo X
+        if teclas[K_e]:
+            rot_x -= 1  # Rotaciona ao redor do eixo X
+
+        # Desenha o fundo com as estrelas
+        desenhar_espaco()
+
+        # Desenha a nave 3D na posição e rotação especificada
+        desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z)
+
         pygame.display.flip()  # Atualiza a tela a cada frame
-        pygame.time.wait(10)   # Pequena pausa para controlar a taxa de atualização
+        pygame.time.wait(10)  # Pequena pausa para controlar a taxa de atualização
 
 if __name__ == "__main__":
     main()
