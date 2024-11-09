@@ -25,6 +25,36 @@ def desenhar_espaco():
         )
     glEnd()
 
+# Função para desenhar a nave
+def desenhar_nave():
+    glColor3f(1, 0, 0)  # Cor da nave (vermelho)
+
+    # Corpo da nave (triângulo)
+    glBegin(GL_TRIANGLES)
+    glVertex3f(0, 2, 0)  # Ponta da nave
+    glVertex3f(-2, -2, 0)  # Base da nave à esquerda
+    glVertex3f(2, -2, 0)  # Base da nave à direita
+    glEnd()
+
+    # Asas da nave (retângulos)
+    glColor3f(0, 0, 1)  # Cor das asas (azul)
+
+    # Asa esquerda
+    glBegin(GL_QUADS)
+    glVertex3f(-2, -2, 0)
+    glVertex3f(-4, -4, 0)
+    glVertex3f(-4, -6, 0)
+    glVertex3f(-2, -6, 0)
+    glEnd()
+
+    # Asa direita
+    glBegin(GL_QUADS)
+    glVertex3f(2, -2, 0)
+    glVertex3f(4, -4, 0)
+    glVertex3f(4, -6, 0)
+    glVertex3f(2, -6, 0)
+    glEnd()
+
 def main():
     inicializar_janela()
     while True:
@@ -33,7 +63,8 @@ def main():
                 pygame.quit()
                 return
 
-        desenhar_espaco()
+        desenhar_espaco()  # Desenha o fundo com as estrelas
+        desenhar_nave()  # Desenha a nave no centro da tela
         pygame.display.flip()  # Atualiza a tela a cada frame
         pygame.time.wait(10)   # Pequena pausa para controlar a taxa de atualização
 
