@@ -4,8 +4,60 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import random
 import math
+import time
+# Função para exibir a imagem e o texto por 10 segundos
+def exibir_imagem():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))  # Tamanho da janela de exibição
+    imagem = pygame.image.load(r'C:\Users\Pichau\OneDrive\Área de Trabalho\leonard_2.jpg')  # Caminho da imagem
+    
+    # Exibe a imagem na tela
+    screen.blit(imagem, (0, 0))
 
-# Inicialização da janela usando pygame
+    # Função para desenhar o quadro com o texto
+    def desenhar_texto():
+        font = pygame.font.SysFont("Arial", 15)  # Fonte do texto, tamanho ajustado
+        texto_original = ("Capitão Kirk, sua missão é conduzir a Enterprise até a zona de neutralidade, "
+                          "onde uma disputa entre duas facções galácticas ameaça a paz. Utilize a diplomacia para "
+                          "evitar o conflito e, se necessário, empregue a lógica para garantir que nossa presença "
+                          "não seja vista como uma ameaça. A sobrevivência da Enterprise e a preservação da paz "
+                          "dependem de suas decisões.")
+        
+        # Quebra o texto em múltiplas linhas para caber no quadro
+        palavras = texto_original.split(" ")
+        linhas = []
+        linha_atual = ""
+        for palavra in palavras:
+            # Se a linha atual com a próxima palavra for maior que o limite (em pixels), começa uma nova linha
+            if font.size(linha_atual + " " + palavra)[0] <= 700:  # 700 é o limite de largura do quadro
+                linha_atual += " " + palavra
+            else:
+                linhas.append(linha_atual)
+                linha_atual = palavra
+        if linha_atual:
+            linhas.append(linha_atual)
+
+        # Desenha o quadro (fundo preto)
+        pygame.draw.rect(screen, (0, 0, 0), (50, 450, 700, 150))  # Desenha o quadro com altura ajustada
+
+        # Exibe cada linha de texto no quadro
+        y_offset = 470  # Posição inicial vertical do texto
+        for linha in linhas:
+            texto = font.render(linha, True, (255, 255, 255))  # Texto em branco
+            screen.blit(texto, (60, y_offset))  # Exibe o texto
+            y_offset += 30  # Ajusta a posição vertical para a próxima linha
+
+    desenhar_texto()  # Chama a função para desenhar o texto com o quadro
+
+    pygame.display.flip()
+
+    # Espera 10 segundos antes de continuar
+    time.sleep(20)
+
+    # Fecha a janela
+    pygame.quit()
+
+# Função para inicializar a janela OpenGL usando pygame
 def inicializar_janela():
     pygame.init()
     display = (800, 600)
@@ -26,37 +78,15 @@ def desenhar_espaco():
         )
     glEnd()
 
-# Função para desenhar a nave (agora como um disco cinza)
-def desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z):
-    glPushMatrix()  # Empilha a matriz para que transformações não afetem outros objetos
-    glTranslatef(x_pos, y_pos, z_pos)  # Move a nave para a posição x_pos no eixo X
-
-    # Rotação da nave nos eixos X, Y e Z
-    glRotatef(rot_x, 1, 0, 0)  # Rotaciona a nave ao redor do eixo X
-    glRotatef(rot_y, 0, 1, 0)  # Rotaciona a nave ao redor do eixo Y
-    glRotatef(rot_z, 0, 0, 1)  # Rotaciona a nave ao redor do eixo Z
-
-    # Corpo da nave - um disco cinza
-    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a nave
-    gluDisk(gluNewQuadric(), 0, 5, 32, 1)  # Desenha um disco com raio 5 e espessura 1
-
-    # Desenhando os pontos na parte superior da nave (círculos de pontos)
-    desenhar_pontos_nave()
-
-    # Adicionando a bola vermelha brilhante na borda da nave
-    desenhar_bola_vermelha()
-
-    glPopMatrix()  # Restaura a transformação original
-
 # Função para desenhar os pontos na parte de cima da nave
 def desenhar_pontos_nave():
     glPushMatrix()  # Empilha a matriz para não afetar transformações anteriores
 
     # Translação para posicionar os pontos na parte de cima da nave
-    glTranslatef(0.0, 0.0, 0.5)  # Ajusta para um pouco acima da nave
+    glTranslatef(0.0, 0.0, 0.0)  # Ajusta para um pouco acima da nave
 
     # Vamos desenhar círculos concêntricos de pontos
-    num_circulos = 9 #ESSA PARTE TEM QUE SER AUMENTADA CASO AUMENTE O TAMNHO DA NAVE
+    num_circulos = 9
     for i in range(num_circulos):
         raio = 0.5 + i * 0.5  # Aumenta o raio conforme o número de círculos
         num_pontos = 12 + i * 6  # Aumenta o número de pontos por círculo
@@ -92,7 +122,60 @@ def desenhar_bola_vermelha():
 
     glPopMatrix()  # Restaura a transformação original
 
+# Função para desenhar as turbinas da nave
+def desenhar_turbinas():
+    glPushMatrix()  # Salva a matriz atual
+
+    # Configuração da cor das turbinas (cinza escuro)
+    glColor3f(0.3, 0.3, 0.3)
+
+    # Primeira turbina (lado esquerdo)
+    glPushMatrix()
+    glTranslatef(-2.5, 0.0, -1.0)  # Move a turbina para baixo e à esquerda da nave
+    glRotatef(90, 1, 0, 0)  # Rotaciona para alinhar o cilindro verticalmente
+    gluCylinder(gluNewQuadric(), 0.5, 0.5, 2, 32, 32)  # Desenha o cilindro
+    glPopMatrix()
+
+    # Segunda turbina (lado direito)
+    glPushMatrix()
+    glTranslatef(2.5, 0.0, -1.0)  # Move a turbina para baixo e à direita da nave
+    glRotatef(90, 1, 0, 0)  # Rotaciona para alinhar o cilindro verticalmente
+    gluCylinder(gluNewQuadric(), 0.5, 0.5, 2, 32, 32)  # Desenha o cilindro
+    glPopMatrix()
+
+    glPopMatrix()  # Restaura a matriz original
+
+# Função para desenhar a nave
+def desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z):
+    glPushMatrix()  # Empilha a matriz para que transformações não afetem outros objetos
+    glTranslatef(x_pos, y_pos, z_pos)  # Move a nave para a posição x_pos no eixo X
+
+    # Rotação da nave nos eixos X, Y e Z
+    glRotatef(rot_x, 1, 0, 0)  # Rotaciona a nave ao redor do eixo X
+    glRotatef(rot_y, 0, 1, 0)  # Rotaciona a nave ao redor do eixo Y
+    glRotatef(rot_z, 0, 0, 1)  # Rotaciona a nave ao redor do eixo Z
+
+    # Corpo da nave - um disco cinza
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a nave
+    gluDisk(gluNewQuadric(), 0, 5, 32, 1)  # Desenha um disco com raio 5 e espessura 1
+
+    # Desenhando os pontos na parte superior da nave
+    desenhar_pontos_nave()
+
+    # Adicionando a bola vermelha brilhante na borda da nave
+    desenhar_bola_vermelha()
+
+    # Adicionando as turbinas abaixo da nave
+    desenhar_turbinas()
+
+    glPopMatrix()  # Restaura a transformação original
+
+# Função principal
 def main():
+    # Exibe a imagem antes do resto do código
+    exibir_imagem()
+
+    # Inicializa a janela OpenGL
     inicializar_janela()
     
     # Posições iniciais da nave (começando à esquerda da tela)
@@ -129,25 +212,18 @@ def main():
             rot_x += 1  # Rotaciona ao redor do eixo X (sentido anti-horário)
         if teclas[K_s]:
             rot_x -= 1  # Rotaciona ao redor do eixo X (sentido horário)
-        
-        # Apenas as teclas W e S devem rotacionar a nave ao redor do eixo Y
         if teclas[K_a]:
             rot_y += 1  # Rotaciona ao redor do eixo Y (sentido anti-horário)
         if teclas[K_d]:
             rot_y -= 1  # Rotaciona ao redor do eixo Y (sentido horário)
 
-        # Animação da nave chegando à tela
-        if x_pos < 0:
-            x_pos += 0.1  # A nave se move para a direita até alcançar a posição inicial na tela
-
-        # Desenha o fundo com as estrelas
+        # Desenha o espaço e a nave
         desenhar_espaco()
-
-        # Desenha a nave 3D (agora um disco cinza) na posição e rotação especificada
         desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z)
 
-        pygame.display.flip()  # Atualiza a tela a cada frame
-        pygame.time.wait(10)  # Pequena pausa para controlar a taxa de atualização
+        # Atualiza a tela
+        pygame.display.flip()
+        pygame.time.wait(10)  # Pequena pausa para suavizar a animação
 
 if __name__ == "__main__":
     main()
