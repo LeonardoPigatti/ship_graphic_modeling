@@ -5,7 +5,20 @@ from OpenGL.GLU import *
 import random
 import math
 import time
+pygame.mixer.init()
 
+import webbrowser
+
+def abrir_video_youtube(url):
+    # Abre o vídeo no navegador
+    webbrowser.open(url)
+
+def tocar_musica(caminho_da_musica):
+    # Carrega a música
+    pygame.mixer.music.load(caminho_da_musica)
+    # Começa a tocar a música em loop (-1 significa que a música irá tocar indefinidamente)
+    pygame.mixer.music.play(loops=-1, start=0.0)
+    
 # Função para exibir a imagem e o texto por 10 segundos
 def exibir_imagem():
     pygame.init()
@@ -53,7 +66,7 @@ def exibir_imagem():
     pygame.display.flip()
 
     # Espera 10 segundos antes de continuar
-    time.sleep(1)
+    time.sleep(20)
 
     # Fecha a janela
     pygame.quit()
@@ -61,6 +74,7 @@ def exibir_imagem():
 # Função para inicializar a janela OpenGL usando pygame
 def inicializar_janela():
     pygame.init()
+    tocar_musica("C:\\Users\\Pichau\\Downloads\\rock.mp3")
     display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
     gluPerspective(30, (display[0] / display[1]), 0.1, 100.0)  # Ajuste do FOV (campo de visão)
@@ -275,6 +289,9 @@ def main():
             else:
                 piscar = False  # Desativa o piscar após o tempo
                 glClearColor(0, 0, 0, 1)  # Cor normal (preto)
+                
+        if teclas[K_u]:
+           abrir_video_youtube("https://youtu.be/Nn6F8VXQ9eE?si=dQgoJfKCRBAyLJAj&t=50")
                 
         if teclas[K_f]:
             x_pos -= 0.8  # Move para a direita
