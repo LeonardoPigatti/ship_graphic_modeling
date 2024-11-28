@@ -52,7 +52,7 @@ def exibir_imagem():
     pygame.display.flip()
 
     # Espera 10 segundos antes de continuar
-    time.sleep(20)
+    time.sleep(5)
 
     # Fecha a janela
     pygame.quit()
@@ -188,6 +188,10 @@ def main():
     rot_y = 0
     rot_z = 0
 
+    # Variáveis de controle de piscar
+    piscar = False  # Controle para ativar/desativar o piscar
+    tempo_piscar = 0  # Controla o tempo de piscar
+
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -217,6 +221,23 @@ def main():
         if teclas[K_d]:
             rot_y -= 1  # Rotaciona ao redor do eixo Y (sentido horário)
 
+        # Ativa/desativa o piscar com a tecla "G"
+        if teclas[K_g]:
+            piscar = True
+            tempo_piscar = time.time()  # Marca o tempo de início do piscar
+
+        # Se estiver piscando, alterne a cor da tela
+        if piscar:
+            # Verifica o tempo de piscar
+            if time.time() - tempo_piscar < 0.5:  # Pisca por 0.5 segundos
+                if (int(time.time() * 10) % 2) == 0:  # Alterna a cor a cada 0.5 segundos
+                    glClearColor(75/255, 224/255, 228/255, 1)  # Cor #4BE0E4
+                else:
+                    glClearColor(0, 0, 0, 1)  # Cor normal (preto)
+            else:
+                piscar = False  # Desativa o piscar após o tempo
+                glClearColor(0, 0, 0, 1)  # Cor normal (preto)
+        
         # Desenha o espaço e a nave
         desenhar_espaco()
         desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z)
