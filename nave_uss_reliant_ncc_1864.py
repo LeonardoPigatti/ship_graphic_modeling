@@ -5,6 +5,7 @@ from OpenGL.GLU import *
 import random
 import math
 import time
+
 # Função para exibir a imagem e o texto por 10 segundos
 def exibir_imagem():
     pygame.init()
@@ -52,7 +53,7 @@ def exibir_imagem():
     pygame.display.flip()
 
     # Espera 10 segundos antes de continuar
-    time.sleep(5)
+    time.sleep(1)
 
     # Fecha a janela
     pygame.quit()
@@ -109,41 +110,63 @@ def desenhar_pontos_nave():
     glPopMatrix()  # Restaura a transformação original
 
 # Função para desenhar a bola vermelha brilhante na borda da nave
-def desenhar_bola_vermelha():
-    glPushMatrix()  # Empilha a matriz para que transformações não afetem outros objetos
-
-    # Translação para posicionar a bola na borda da nave (canto superior direito)
-    glTranslatef(5.0, 0.0, 1.0)  # Ajuste para a borda da nave
-
-    # Desenha a esfera vermelha
-    glColor3f(1, 0, 0)  # Cor vermelha para a bola
-    quadric = gluNewQuadric()  # Cria um objeto quadrático para desenhar a esfera
-    gluSphere(quadric, 0.5, 10, 10)  # Desenha a esfera sólida com raio 0.5
-
-    glPopMatrix()  # Restaura a transformação original
 
 # Função para desenhar as turbinas da nave
 def desenhar_turbinas():
     glPushMatrix()  # Salva a matriz atual
 
-    # Configuração da cor das turbinas (cinza escuro)
-    glColor3f(0.3, 0.3, 0.3)
-
     # Primeira turbina (lado esquerdo)
     glPushMatrix()
-    glTranslatef(-2.5, 0.0, -1.0)  # Move a turbina para baixo e à esquerda da nave
+    glTranslatef(-5.5, 0.0, 2.0)  # Move a turbina para baixo e à esquerda da nave
     glRotatef(90, 1, 0, 0)  # Rotaciona para alinhar o cilindro verticalmente
+
+    # Corpo da turbina (cilindro)
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para o corpo
     gluCylinder(gluNewQuadric(), 0.5, 0.5, 2, 32, 32)  # Desenha o cilindro
+
+    # Tampa superior (cor cinza)
+    glPushMatrix()
+    glTranslatef(0, 0, 2)  # Move para a tampa superior
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a tampa superior
+    gluDisk(gluNewQuadric(), 0, 0.5, 32, 32)  # Desenha a tampa superior
+    glPopMatrix()
+
+    # Tampa inferior (cor azul)
+    glPushMatrix()
+    glTranslatef(0, 0, 2)  # Move para a tampa inferior
+    glColor3f(0.0, 0.0, 1.0)  # Cor azul para a tampa inferior
+    gluDisk(gluNewQuadric(), 0, 0.5, 32, 32)  # Desenha a tampa inferior
+    glPopMatrix()
+
     glPopMatrix()
 
     # Segunda turbina (lado direito)
     glPushMatrix()
-    glTranslatef(2.5, 0.0, -1.0)  # Move a turbina para baixo e à direita da nave
+    glTranslatef(5.5, 0.0, 2.0)  # Move a turbina para baixo e à direita da nave
     glRotatef(90, 1, 0, 0)  # Rotaciona para alinhar o cilindro verticalmente
+
+    # Corpo da turbina (cilindro)
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para o corpo
     gluCylinder(gluNewQuadric(), 0.5, 0.5, 2, 32, 32)  # Desenha o cilindro
+
+    # Tampa superior (cor cinza)
+    glPushMatrix()
+    glTranslatef(0, 0, 2)  # Move para a tampa superior
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a tampa superior
+    gluDisk(gluNewQuadric(), 0, 0.5, 32, 32)  # Desenha a tampa superior
+    glPopMatrix()
+
+    # Tampa inferior (cor azul)
+    glPushMatrix()
+    glTranslatef(0, 0, 2)  # Move para a tampa inferior
+    glColor3f(0.0, 0.0, 1.0)  # Cor azul para a tampa inferior
+    gluDisk(gluNewQuadric(), 0, 0.5, 32, 32)  # Desenha a tampa inferior
+    glPopMatrix()
+
     glPopMatrix()
 
     glPopMatrix()  # Restaura a matriz original
+
 
 # Função para desenhar a nave
 def desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z):
@@ -157,13 +180,26 @@ def desenhar_nave(x_pos, y_pos, z_pos, rot_x, rot_y, rot_z):
 
     # Corpo da nave - um disco cinza
     glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a nave
-    gluDisk(gluNewQuadric(), 0, 5, 32, 1)  # Desenha um disco com raio 5 e espessura 1
+    gluCylinder(gluNewQuadric(), 5, 5, 1.5, 32, 32)  # Desenha um disco com raio 5 e espessura 1
+    
+    # Base inferior da nave
+    glPushMatrix()  # Salva o estado atual da matriz
+    glTranslatef(0, 0, 1.5)  # Move para a base inferior
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a base inferior
+    gluDisk(gluNewQuadric(), 0, 5, 32, 32)  # Cria o disco para a base inferior
+    glPopMatrix()  # Restaura o estado da matriz
+    
+    # Base superior da nave
+    glPushMatrix()  # Salva o estado atual da matriz
+    glTranslatef(0, 0, 1.5)  # Move para a base superior
+    glColor3f(0.5, 0.5, 0.5)  # Cor cinza para a base superior
+    gluDisk(gluNewQuadric(), 0, 5, 32, 32)  # Cria o disco para a base superior
+    glPopMatrix()  # Restaura o estado da matriz
 
     # Desenhando os pontos na parte superior da nave
     desenhar_pontos_nave()
 
     # Adicionando a bola vermelha brilhante na borda da nave
-    desenhar_bola_vermelha()
 
     # Adicionando as turbinas abaixo da nave
     desenhar_turbinas()
@@ -223,6 +259,26 @@ def main():
 
         # Ativa/desativa o piscar com a tecla "G"
         if teclas[K_g]:
+            x_pos += 0.8  # Move para a direita
+            z_pos += 0.8  # Move para a direita
+            piscar = True
+            tempo_piscar = time.time()  # Marca o tempo de início do piscar
+
+        # Se estiver piscando, alterne a cor da tela
+        if piscar:
+            # Verifica o tempo de piscar
+            if time.time() - tempo_piscar < 0.5:  # Pisca por 0.5 segundos
+                if (int(time.time() * 10) % 2) == 0:  # Alterna a cor a cada 0.5 segundos
+                    glClearColor(75/255, 224/255, 228/255, 1)  # Cor #4BE0E4
+                else:
+                    glClearColor(0, 0, 0, 1)  # Cor normal (preto)
+            else:
+                piscar = False  # Desativa o piscar após o tempo
+                glClearColor(0, 0, 0, 1)  # Cor normal (preto)
+                
+        if teclas[K_f]:
+            x_pos -= 0.8  # Move para a direita
+            z_pos -= 0.8  # Move para a direita
             piscar = True
             tempo_piscar = time.time()  # Marca o tempo de início do piscar
 
